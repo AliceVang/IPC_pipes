@@ -32,18 +32,26 @@ int main(void){
 	}
 
 	if(pid > 0){ // parent process
-		close(parent_fd[READ_END]);	// close the unused end of the pipe
-		write(parent_fd[WRITE_END], parent_write, strlen(parent_write)+1); // write to the pipe
-		close(parent_fd[WRITE_END]); // close the write end of the pipe
-
+		close(parent_fd[READ_END]);	// close the unused end of the parent pipe
+		write(parent_fd[WRITE_END], parent_write, strlen(parent_write)+1); // write to the parent pipe
+		close(parent_fd[WRITE_END]); // close the write end of the parent pipe
+	//	printf("%s %d\n", parent_read, getpid());
 		
+		close(child_fd[WRITE_END]);
+		read(child_fd[READ_END], child_read, BUFFER_SIZE);
+
 	} else { //child process
+		close(child_fd[READ_END]);
+		write(child_fd[WRITE_END], child_write, strlen(child_write)+1);
+		close(child_fd[WRITE_END]);
+
 		close(parent_fd[WRITE_END]); // close the unused end of the pipe
 		read(parent_fd[READ_END], parent_read, BUFFER_SIZE); // read from the pipe
-		printf("%s %d\n", parent_read, getpid());
+	//	printf("%s %d\n", parent_read, getpid());
 		
 		close(parent_fd[READ_END]);
 	}
-
+	printf("%s %d\n", parent_read, getppid());
+	printf("%s %d\n", child_read, getpid());
 	return 0;
 }
