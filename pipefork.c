@@ -3,18 +3,24 @@
 #include <string.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 25
+#define BUFFER_SIZE 100
 #define READ_END 0
 #define WRITE_END 1
 
 int main(void){
-	char write_size[BUFFER_SIZE] = "Hello World!\n";
-	char read_size[BUFFER_SIZE];
+	char parent_write[BUFFER_SIZE] = "I am your daddy! and my name is";
+	char parent_read[BUFFER_SIZE];
+	
+	char child_write[BUFFER_SIZE] = "Daddy my name is ";
+	char child_read[BUFFER_SIZE];
+
 	pid_t pid;
 
-	int fd[2];
-	if(pipe(fd) == -1){
-		fprintf(stderr,"Error: pipe failed.\n");
+	int parent_fd[2];
+	int child_fd[2];
+
+	if(pipe(parent_fd) == -1){
+		fprintf(stderr,"Error: parent pipe failed.\n");
 		return 1;
 	}
 
@@ -25,16 +31,18 @@ int main(void){
 		return 1;
 	}
 
-	if(pid > 0){
-		close(fd[READ_END]);	// close the unused end of the pipe
-		write(fd[WRITE_END], write_size, strlen(write_size)+1); // write to the pipe
-		close(fd[WRITE_END]); // close the write end of the pipe
-	} else {
-		close(fd[WRITE_END]); // close the unused end of the pipe
-		read(fd[READ_END], read_size, BUFFER_SIZE); // read from the pipe
-		printf("read %s", read_size);
+	if(pid > 0){ // parent process
+		close(parent_fd[READ_END]);	// close the unused end of the pipe
+		write(parent_fd[WRITE_END], parent_write, strlen(parent_write)+1); // write to the pipe
+		close(parent_fd[WRITE_END]); // close the write end of the pipe
+
 		
-		close(fd[READ_END]);
+	} else { //child process
+		close(parent_fd[WRITE_END]); // close the unused end of the pipe
+		read(parent_fd[READ_END], parent_read, BUFFER_SIZE); // read from the pipe
+		printf("%s %d\n", parent_read, getpid());
+		
+		close(parent_fd[READ_END]);
 	}
 
 	return 0;
