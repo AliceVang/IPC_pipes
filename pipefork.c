@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 #define BUFFER_SIZE 100
 #define READ_END 0
@@ -47,6 +48,14 @@ int main(void){
 		printf("%s %d\n", child_read, getpid());
 		fflush(stdout);
 		close(child_fd[READ_END]); // close after reading
+
+		int status;
+		waitpid(pid, &status, 0);
+		if(WIFEXITED(status)){
+			// successful child exit
+		} else {
+			fprintf(stderr, "Error: child terminatation unsuccessful.\n");
+		}
 
 	} else { //child process
 		close(child_fd[READ_END]);
