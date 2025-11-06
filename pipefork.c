@@ -24,6 +24,11 @@ int main(void){
 		return 1;
 	}
 
+	if(pipe(child_fd) == -1){
+		fprintf(stderr, "Error: chils pipe failed.\n");
+		return 1;
+	}
+
 	pid = fork();
 
 	if(pid < 0){
@@ -40,6 +45,7 @@ int main(void){
 		
 		read(child_fd[READ_END], child_read, BUFFER_SIZE);
 		printf("%s %d\n", child_read, getpid());
+		fflush(stdout);
 		close(child_fd[READ_END]); // close after reading
 
 	} else { //child process
@@ -48,7 +54,8 @@ int main(void){
 
 		read(parent_fd[READ_END], parent_read, BUFFER_SIZE);
 		printf("%s %d\n", parent_read, getpid());
-	
+		fflush(stdout);
+
 		write(child_fd[WRITE_END], child_write, strlen(child_write)+1);
 		close(child_fd[WRITE_END]);
 		
