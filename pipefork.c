@@ -12,7 +12,7 @@ int main(void){
 	char parent_write[BUFFER_SIZE] = "I am your daddy! and my name is";
 	char parent_read[BUFFER_SIZE];
 	
-	char child_write[BUFFER_SIZE] = "Daddy my name is ";
+	char child_write[BUFFER_SIZE] = "Daddy my name is";
 	char child_read[BUFFER_SIZE];
 
 	pid_t pid;
@@ -26,7 +26,7 @@ int main(void){
 	}
 
 	if(pipe(child_fd) == -1){
-		fprintf(stderr, "Error: chils pipe failed.\n");
+		fprintf(stderr, "Error: child pipe failed.\n");
 		return 1;
 	}
 
